@@ -76,9 +76,3 @@ class ABIFunction:
 class ContractABI:
     functions: List[ABIFunction]
     name: Optional[str] = None
-    
-
-def selector(signature: str) -> hex:
-    k = sha3.keccak_256()
-    k.update(signature.encode('utf-8'))
-    return k.digest()[:4].hex()
