@@ -1,6 +1,10 @@
 # pyrevm_contract
 Minimal Brownie like contract wrapper for Pyrevm
 
+```
+pip install pyrevm_contract
+```
+
 ```py
 from pyrevm_contract import Revm, Contract
 
