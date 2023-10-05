@@ -2,7 +2,6 @@ import json
 
 from .revm import Revm
 from .models import ABIFunction, ContractABI
-from eth_utils.abi import collapse_if_tuple
 
 
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -101,3 +100,17 @@ class Contract:
 
     def balance(self):
         return self.revm.get_balance(self.address)
+    
+    
+def collapse_if_tuple(abi: dict) -> str:
+    typ = abi["type"]
+    if not typ.startswith("tuple"):
+        return typ
+
+    delimited = ",".join(collapse_if_tuple(c) for c in abi["components"])
+    # Whatever comes after "tuple" is the array dims.  The ABI spec states that
+    # this will have the form "", "[]", or "[k]".
+    array_dim = typ[5:]
+    collapsed = "({}){}".format(delimited, array_dim)
+
+    return collapsed
