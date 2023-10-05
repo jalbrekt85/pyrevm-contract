@@ -2,6 +2,7 @@ import json
 
 from .revm import Revm
 from .models import ABIFunction, ContractABI
+from eth_utils.abi import collapse_if_tuple
 
 
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -34,7 +35,7 @@ class Contract:
         for entry in abi:
             if entry["type"] == "function":
                 name = entry["name"]
-                inputs = [input["type"] for input in entry["inputs"]]
+                inputs = [collapse_if_tuple(inputs) for inputs in entry["inputs"]]
                 outputs = [output["type"] for output in entry["outputs"]]
                 constant = entry["stateMutability"] in ("view", "pure")
                 payable = entry["stateMutability"] == "payable"
@@ -47,7 +48,6 @@ class Contract:
                         payable=payable,
                     )
                 )
-
         return ContractABI(functions)
     
     def __getattr__(self, attribute):
@@ -64,7 +64,6 @@ class Contract:
     def call_function(self, func: ABIFunction, args: tuple, kwargs: dict = {}):
         calldata = func.encode_inputs(args)
         value = kwargs.get("value", 0)
-        print(calldata.hex())
         if func.constant:
             raw_output = self.revm.call_raw(
                 caller=self.caller, to=self.address, data=calldata
