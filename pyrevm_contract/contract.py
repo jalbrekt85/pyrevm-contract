@@ -40,7 +40,7 @@ class Contract:
         return parse_json_abi(abi)
 
     def _decode_output(self, func: ABIFunction, raw_output: bytes) -> any:
-        if raw_output:
+        if func.outputs:
             if isinstance(raw_output, str):
                 raw_output = bytes.fromhex(
                     raw_output[2:] if raw_output.startswith("0x") else raw_output
@@ -72,8 +72,7 @@ class Contract:
                 data=calldata,
                 value=value,
             )
-            if func.outputs:
-                return self._decode_output(func, raw_output)
+            return self._decode_output(func, raw_output)
 
     def balance(self):
         return self.revm.get_balance(self.address)
