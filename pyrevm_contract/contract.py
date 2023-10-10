@@ -1,10 +1,11 @@
 import json
 
 from .revm import Revm
-from .models import ABIFunction, ContractABI
+from .abi import ABIFunction, ContractABI, parse_json_abi
 
 
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
+
 
 class Contract:
     def __init__(
@@ -30,59 +31,38 @@ class Contract:
             with open(file_path, "r") as file:
                 abi = json.load(file)
 
-        functions = []
-        for entry in abi:
-            if entry["type"] == "function":
-                name = entry["name"]
-                inputs = [collapse_if_tuple(inputs) for inputs in entry["inputs"]]
-                outputs = [output["type"] for output in entry["outputs"]]
-                constant = entry["stateMutability"] in ("view", "pure")
-                payable = entry["stateMutability"] == "payable"
-                functions.append(
-                    ABIFunction(
-                        name=name,
-                        inputs=inputs,
-                        outputs=outputs,
-                        constant=constant,
-                        payable=payable,
-                    )
-                )
-        return ContractABI(functions)
-    
+        return parse_json_abi(abi)
+
     def __getattr__(self, attribute):
         for func in self.abi.functions:
             if func.name == attribute or func.selector == attribute:
-                return lambda *args, **kwargs: self.call_function(
-                    func, args, kwargs
-                )
+                return lambda *args, **kwargs: self.call_function(func, args, kwargs)
         raise AttributeError(
-            f"No function named or matching selector {attribute} in"
-            " contract ABI"
+            f"No function named or matching selector {attribute} in" " contract ABI"
         )
 
     def call_function(self, func: ABIFunction, args: tuple, kwargs: dict = {}):
         calldata = func.encode_inputs(args)
         value = kwargs.get("value", 0)
+        caller = kwargs.get("caller", self.caller)
         if func.constant:
             raw_output = self.revm.call_raw(
-                caller=self.caller, to=self.address, data=calldata
+                caller=caller, to=self.address, data=calldata
             )
             if isinstance(raw_output, str):
                 raw_output = bytes.fromhex(
-                    raw_output[2:]
-                    if raw_output.startswith("0x")
-                    else raw_output
+                    raw_output[2:] if raw_output.startswith("0x") else raw_output
                 )
             return func.decode_outputs(raw_output)
         else:
             if not func.payable and value > 0:
                 raise ValueError("Cannot send value to a non-payable function")
 
-            if self.caller == ZERO_ADDRESS:
+            if caller == ZERO_ADDRESS:
                 raise ValueError("Cannot call a non-constant function without a caller")
 
             raw_output = self.revm.call_raw_committing(
-                caller=self.caller,
+                caller=caller,
                 to=self.address,
                 data=calldata,
                 value=value,
@@ -90,9 +70,7 @@ class Contract:
             if func.outputs:
                 if isinstance(raw_output, str):
                     raw_output = bytes.fromhex(
-                        raw_output[2:]
-                        if raw_output.startswith("0x")
-                        else raw_output
+                        raw_output[2:] if raw_output.startswith("0x") else raw_output
                     )
                 return func.decode_outputs(raw_output)
             else:
@@ -100,17 +78,3 @@ class Contract:
 
     def balance(self):
         return self.revm.get_balance(self.address)
-    
-    
-def collapse_if_tuple(abi: dict) -> str:
-    typ = abi["type"]
-    if not typ.startswith("tuple"):
-        return typ
-
-    delimited = ",".join(collapse_if_tuple(c) for c in abi["components"])
-    # Whatever comes after "tuple" is the array dims.  The ABI spec states that
-    # this will have the form "", "[]", or "[k]".
-    array_dim = typ[5:]
-    collapsed = "({}){}".format(delimited, array_dim)
-
-    return collapsed

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyrevm_contract",
-    version="0.1.6",
+    version="0.1.7",
     author="jalbrekt85",
     author_email="jcalbrecht85@gmail.com",
     description="Minimal Brownie like contract wrapper for Pyrevm",
@@ -18,11 +18,10 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.9',
+    python_requires=">=3.9",
     install_requires=[
         "pyrevm",
         "eth-abi",
         "pysha3",
     ],
-
 )
