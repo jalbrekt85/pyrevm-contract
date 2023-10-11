@@ -65,7 +65,6 @@ class Contract:
 
             if caller == ZERO_ADDRESS:
                 raise ValueError("Cannot call a non-constant function without a caller")
-
             raw_output = self.revm.call_raw_committing(
                 caller=caller,
                 to=self.address,
