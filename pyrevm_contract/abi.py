@@ -52,9 +52,9 @@ class ABIFunction:
         if not output_data or not self.outputs:
             return None
 
-        if isinstance(raw_output, str):
-            raw_output = bytes.fromhex(
-                raw_output[2:] if raw_output.startswith("0x") else raw_output
+        if isinstance(output_data, str):
+            output_data = bytes.fromhex(
+                output_data[2:] if output_data.startswith("0x") else output_data
             )
 
         try:
