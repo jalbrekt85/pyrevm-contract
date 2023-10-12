@@ -49,11 +49,13 @@ class ABIFunction:
         return selector + encoded_inputs
 
     def decode_outputs(self, output_data: bytes) -> Any:
-        if not output_data:
+        if not output_data or not self.outputs:
             return None
 
-        if not self.outputs:
-            return []
+        if isinstance(raw_output, str):
+            raw_output = bytes.fromhex(
+                raw_output[2:] if raw_output.startswith("0x") else raw_output
+            )
 
         try:
             decoded = decode(self.outputs, output_data)
@@ -79,7 +81,7 @@ def parse_json_abi(abi: dict) -> ContractABI:
         if entry["type"] == "function":
             name = entry["name"]
             inputs = [collapse_if_tuple(inputs) for inputs in entry["inputs"]]
-            outputs = [output["type"] for output in entry["outputs"]]
+            outputs = [collapse_if_tuple(outputs) for outputs in entry["outputs"]]
             constant = entry["stateMutability"] in ("view", "pure")
             payable = entry["stateMutability"] == "payable"
             functions.append(

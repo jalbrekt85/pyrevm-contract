@@ -39,15 +39,6 @@ class Contract:
 
         return parse_json_abi(abi)
 
-    def _decode_output(self, func: ABIFunction, raw_output: bytes) -> any:
-        if func.outputs:
-            if isinstance(raw_output, str):
-                raw_output = bytes.fromhex(
-                    raw_output[2:] if raw_output.startswith("0x") else raw_output
-                )
-            return func.decode_outputs(raw_output)
-        return None
-
     def call_function(self, func: ABIFunction, args: tuple, kwargs: dict = {}):
         value = kwargs.get("value", 0)
         caller = kwargs.get("caller", self.caller)
@@ -58,7 +49,7 @@ class Contract:
             raw_output = self.revm.call_raw(
                 caller=caller, to=self.address, data=calldata
             )
-            return self._decode_output(func, raw_output)
+            return func.decode_outputs(raw_output)
         else:
             if not func.payable and value > 0:
                 raise ValueError("Cannot send value to a non-payable function")
@@ -71,7 +62,7 @@ class Contract:
                 data=calldata,
                 value=value,
             )
-            return self._decode_output(func, raw_output)
+            return func.decode_outputs(raw_output)
 
     def balance(self):
         return self.revm.get_balance(self.address)
