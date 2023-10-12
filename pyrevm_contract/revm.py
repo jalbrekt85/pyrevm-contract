@@ -20,11 +20,14 @@ class Revm:
         pass
 
     def update_fork(self, new_block_number, fork_url=""):
+        fork_url = fork_url if fork_url else self.fork_url
         self.revm = EVM(
-            fork_url=fork_url if fork_url else self.fork_url,
+            fork_url=fork_url,
             tracing=False,
             fork_block_number=new_block_number,
         )
+        self.block_number = new_block_number
+        self.fork_url = fork_url
 
     def call_raw(self, *args, **kwargs):
         return self.revm.call_raw(*args, **kwargs)
