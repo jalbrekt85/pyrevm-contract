@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyrevm_contract",
-    version="0.2.1",
+    version="0.2.2",
     author="jalbrekt85",
     author_email="jcalbrecht85@gmail.com",
     description="Minimal Brownie like contract wrapper for Pyrevm",
