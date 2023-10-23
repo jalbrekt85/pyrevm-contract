@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from pyrevm_contract import Contract, Revm
+from pyrevm_contract import Contract, Revm, ABIFunction, ContractABI
 
 
 class TestContract(unittest.TestCase):
@@ -65,6 +65,62 @@ class TestContract(unittest.TestCase):
 
         self.assertIsInstance(weth_amt, int)
         self.assertIsInstance(bal_amt, int)
+        
+    def test_manual_abi(self):
+        funcs = [
+            ABIFunction(
+                "balanceOf",
+                ["address"],
+                ["uint256"],
+                True,
+                False,
+            ),
+            ABIFunction(
+                "deposit",
+                [],
+                [],
+                False,
+                True
+            )
+        ]
+        
+        weth = Contract(
+            self.weth_addr,
+            contract_abi=ContractABI(funcs),
+            caller=self.caller
+        )
+
+        weth_before = weth.balanceOf(self.caller)
+        weth.deposit(value=1)
+        self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
+    
+    def test_call_by_selector(self):
+        funcs = [
+            ABIFunction(
+                "balanceOf",
+                ["address"],
+                ["uint256"],
+                True,
+                False,
+            ),
+            ABIFunction(
+                "deposit",
+                [],
+                [],
+                False,
+                True
+            )
+        ]
+        
+        weth = Contract(
+            self.weth_addr,
+            contract_abi=ContractABI(funcs),
+            caller=self.caller
+        )
+
+        weth_before = weth["0x70a08231"](self.caller)
+        weth["0xd0e30db0"](value=1)
+        self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
 
 
 if __name__ == "__main__":

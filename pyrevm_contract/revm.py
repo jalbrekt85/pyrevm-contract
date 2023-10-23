@@ -37,3 +37,6 @@ class Revm:
 
     def get_balance(self, address):
         return self.revm.get_balance(address)
+
+    def set_balance(self, address, value):
+        return self.revm.set_balance(address, value)

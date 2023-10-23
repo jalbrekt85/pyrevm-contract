@@ -9,7 +9,6 @@ import sha3
 class ABIFunction:
     name: Optional[str] = None
     inputs: Optional[List[str]] = None
-    num_args: Optional[int] = None
     outputs: List[str] = None
     constant: bool = False
     payable: bool = False

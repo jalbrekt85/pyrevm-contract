@@ -13,21 +13,32 @@ class Contract:
         address: str,
         abi: dict = None,
         abi_file_path: str = None,
+        contract_abi: 'ContractABI' = None,
         caller: str = ZERO_ADDRESS,
         fork_url="",
         block_number=0,
     ):
         self.address = address
         self.caller = caller
-
-        self.abi = self._load_abi(abi, abi_file_path)
         self.revm = Revm(fork_url=fork_url, block_number=block_number)
+
+        if contract_abi:
+            self.abi = contract_abi
+        else:
+            self.abi = self._load_abi(abi, abi_file_path)
 
     def __getattr__(self, attribute):
         for func in self.abi.functions:
             if func.name == attribute or func.selector == attribute:
                 return lambda *args, **kwargs: self.call_function(func, args, kwargs)
         raise AttributeError(f"No function named {attribute} in contract ABI")
+
+    def __getitem__(self, selector):
+        selector = selector[2:] if selector.startswith("0x") else selector
+        for func in self.abi.functions:
+            if func.get_selector().hex() == selector:
+                return lambda *args, **kwargs: self.call_function(func, args, kwargs)
+        raise AttributeError(f"No function with selector {selector} in contract ABI")
 
     def _load_abi(self, abi: dict = None, file_path: dict = None) -> ContractABI:
         if not abi and not file_path:
