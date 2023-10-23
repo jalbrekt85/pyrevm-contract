@@ -67,5 +67,5 @@ revm.set_balance(caller, 100) # revm cheatcode; sets ether balance of acct
 
 weth.balanceOf(caller) # -> 0
 weth["0xd0e30db0"](value=100, caller=caller) # call via selector
-weth.balanceOf(caller) # -> 200
+weth.balanceOf(caller) # -> 100
 ```
