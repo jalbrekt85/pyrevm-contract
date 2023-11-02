@@ -94,7 +94,7 @@ class TestContract(unittest.TestCase):
         weth.deposit(value=1)
         self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
     
-    def test_call_by_selector(self):
+    def test_call_by_identifier(self):
         funcs = [
             ABIFunction(
                 "balanceOf",
@@ -119,7 +119,7 @@ class TestContract(unittest.TestCase):
         )
 
         weth_before = weth["0x70a08231"](self.caller)
-        weth["0xd0e30db0"](value=1)
+        weth["deposit"](value=1)
         self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
 
 

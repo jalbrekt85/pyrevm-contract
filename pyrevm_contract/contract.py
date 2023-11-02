@@ -33,12 +33,12 @@ class Contract:
                 return lambda *args, **kwargs: self.call_function(func, args, kwargs)
         raise AttributeError(f"No function named {attribute} in contract ABI")
 
-    def __getitem__(self, selector):
-        selector = selector[2:] if selector.startswith("0x") else selector
+    def __getitem__(self, identifier):
+        identifier = identifier[2:] if identifier.startswith("0x") else identifier
         for func in self.abi.functions:
-            if func.get_selector().hex() == selector:
+            if identifier in [func.name, func.get_selector().hex()]:
                 return lambda *args, **kwargs: self.call_function(func, args, kwargs)
-        raise AttributeError(f"No function with selector {selector} in contract ABI")
+        raise AttributeError(f"No function with identifier {identifier} in contract ABI")
 
     def _load_abi(self, abi: dict = None, file_path: dict = None) -> ContractABI:
         if not abi and not file_path:
