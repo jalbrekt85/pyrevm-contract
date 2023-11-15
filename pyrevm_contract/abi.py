@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Any
 
 from eth_abi import encode, decode
-import sha3
+from eth_utils import to_checksum_address, function_signature_to_4byte_selector
 
 
 @dataclass
@@ -16,9 +16,7 @@ class ABIFunction:
 
     @staticmethod
     def func_selector(sig: str) -> bytes:
-        k = sha3.keccak_256()
-        k.update(sig.encode("utf-8"))
-        return k.digest()[:4]
+        return function_signature_to_4byte_selector(sig)
 
     def get_selector(self) -> bytes:
         if self.selector:
@@ -57,7 +55,11 @@ class ABIFunction:
             )
 
         try:
-            decoded = decode(self.outputs, output_data)
+            decoded = decode(self.outputs, output_data, strict=False)
+            decoded = [
+                to_checksum_address(value) if typ == "address" else value
+                for value, typ in zip(decoded, self.outputs)
+            ]
             if len(decoded) == 1:
                 return decoded[0]
             return decoded

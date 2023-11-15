@@ -40,3 +40,6 @@ class Revm:
 
     def set_balance(self, address, value):
         return self.revm.set_balance(address, value)
+    
+    def transfer(self, sender, receiver, value):
+        return self.revm.call_raw_committing(caller=sender, to=receiver, value=value)
