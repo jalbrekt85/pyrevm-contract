@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyrevm_contract",
-    version="0.2.4",
+    version="0.3.0",
     author="jalbrekt85",
     author_email="jcalbrecht85@gmail.com",
     description="Minimal Brownie like contract wrapper for Pyrevm",
@@ -20,8 +20,9 @@ setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "pyrevm",
+        "pyrevm==0.3.0",
         "eth-abi",
         "eth-utils",
+        "eth-hash[pycryptodome]"
     ],
 )

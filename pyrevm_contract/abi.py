@@ -50,12 +50,10 @@ class ABIFunction:
             return None
 
         if isinstance(output_data, str):
-            output_data = bytes.fromhex(
-                output_data[2:] if output_data.startswith("0x") else output_data
-            )
+            output_data = bytes.fromhex(output_data.lstrip("0x"))
 
         try:
-            decoded = decode(self.outputs, output_data, strict=False)
+            decoded = decode(self.outputs, output_data)
             decoded = [
                 to_checksum_address(value) if typ == "address" else value
                 for value, typ in zip(decoded, self.outputs)
@@ -68,7 +66,6 @@ class ABIFunction:
                 "Failed to decode outputs for function"
                 f" {self.name or self.selector}: {str(e)}"
             )
-
 
 @dataclass
 class ContractABI:

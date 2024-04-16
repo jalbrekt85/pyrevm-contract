@@ -53,26 +53,24 @@ class Contract:
     def call_function(self, func: ABIFunction, args: tuple, kwargs: dict = {}):
         value = kwargs.get("value", 0)
         caller = kwargs.get("caller", self.caller)
-
+        ignore_outputs = kwargs.get("ignore_outputs", False)
         calldata = func.encode_inputs(args)
 
-        if func.constant:
-            raw_output = self.revm.call_raw(
-                caller=caller, to=self.address, data=calldata
-            )
-            return func.decode_outputs(raw_output)
-        else:
-            if not func.payable and value > 0:
-                raise ValueError("Cannot send value to a non-payable function")
+        if not func.payable and value > 0:
+            raise ValueError("Cannot send value to a non-payable function")
 
-            if caller == ZERO_ADDRESS:
-                raise ValueError("Cannot call a non-constant function without a caller")
-            raw_output = self.revm.call_raw_committing(
-                caller=caller,
-                to=self.address,
-                data=calldata,
-                value=value,
-            )
+        if not func.constant and caller == ZERO_ADDRESS:
+            raise ValueError("Cannot call a non-constant function without a caller")
+
+        raw_output = self.revm.message_call(
+            caller=self.caller,
+            to=self.address,
+            calldata=calldata,
+            value=value,
+            is_static=func.constant,
+        )
+
+        if not ignore_outputs:
             return func.decode_outputs(raw_output)
 
     def balance(self):

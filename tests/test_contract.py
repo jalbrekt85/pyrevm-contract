@@ -17,16 +17,15 @@ class TestContract(unittest.TestCase):
             "0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014"
         )
 
-        Revm("https://eth.llamarpc.com", 18000000)
+        self.revm = Revm("http://eth.llamarpc.com", 18000000)
         self.vault = Contract(self.vault_addr, vault_abi)
 
     def test_init(self):
         self.assertEqual(
             self.vault.address, "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
         )
-        self.assertEqual(len(self.vault.abi.functions), 1)
-        batch_swap = self.vault.abi.functions[0]
-        self.assertEqual(batch_swap.name, "queryBatchSwap")
+        self.assertEqual(len(self.vault.abi.functions), 26)
+        batch_swap = [f for f in self.vault.abi.functions if f.name == "queryBatchSwap"][0]
         self.assertEqual(
             batch_swap.inputs,
             [

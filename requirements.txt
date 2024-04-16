@@ -1,3 +1,4 @@
-eth-abi==2.2.0
-pyrevm==0.2.0
-pysha3==1.0.2
+pyrevm==0.3.0
+eth-abi
+eth-utils
+eth-hash[pycryptodome]
