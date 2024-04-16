@@ -20,9 +20,7 @@ class ABIFunction:
 
     def get_selector(self) -> bytes:
         if self.selector:
-            return bytes.fromhex(
-                self.selector[2:] if self.selector.startswith("0x") else self.selector
-            )
+            return bytes.fromhex(self.selector.lstrip("0x"))
         elif self.name:
             return self.func_selector(self.get_signature())
         else:

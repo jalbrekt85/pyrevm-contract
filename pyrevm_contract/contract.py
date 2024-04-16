@@ -34,7 +34,7 @@ class Contract:
         raise AttributeError(f"No function named {attribute} in contract ABI")
 
     def __getitem__(self, identifier):
-        identifier = identifier[2:] if identifier.startswith("0x") else identifier
+        identifier = identifier.lstrip("0x")
         for func in self.abi.functions:
             if identifier in [func.name, func.get_selector().hex()]:
                 return lambda *args, **kwargs: self.call_function(func, args, kwargs)
