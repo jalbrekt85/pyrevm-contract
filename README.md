@@ -14,7 +14,8 @@ revm = Revm("https://eth.llamarpc.com", block_number="latest") # revm singleton;
 
 caller = "0x00000000000000000000000000000000000021E8"
 weth_addr = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-weth = Contract(weth_addr, abi_file_path="weth.json") # assuming a `weth.json` abi
+
+weth = Contract(weth_addr, abi_file_path="weth.json") # assuming a `weth.json` abi file
 
 revm.set_balance(caller, 100) # revm cheatcode; sets ether balance of acct
 
@@ -27,6 +28,10 @@ weth.balanceOf(caller) # -> 100
 <br>
 
 ### Other ways to init contracts
+
+
+#### automatic ABI resolution with heimdall
+coming soon
 
 
 #### via json file object
