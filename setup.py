@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="pyrevm_contract",
-    version="0.3.0",
+    name="pyrevm-contract",
+    version="0.3.1",
     author="jalbrekt85",
     author_email="jcalbrecht85@gmail.com",
-    description="Minimal Brownie like contract wrapper for Pyrevm",
+    description="Contract wrapper for pyrevm",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/jalbrekt85/pyrevm_contract",
+    url="https://github.com/jalbrekt85/pyrevm-contract",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

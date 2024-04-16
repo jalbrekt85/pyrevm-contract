@@ -1,5 +1,6 @@
 import json
 import unittest
+import random
 
 from pyrevm_contract import Contract, Revm, ABIFunction, ContractABI
 
@@ -17,8 +18,11 @@ class TestContract(unittest.TestCase):
             "0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014"
         )
 
-        self.revm = Revm("http://eth.llamarpc.com", 18000000)
+        self.revm = Revm("http://0.0.0.0:8545", 18000000)
         self.vault = Contract(self.vault_addr, vault_abi)
+        
+    def _make_rando(self):
+        return '0x' + format(random.getrandbits(160), '040x')
 
     def test_init(self):
         self.assertEqual(
@@ -120,6 +124,15 @@ class TestContract(unittest.TestCase):
         weth_before = weth["0x70a08231"](self.caller)
         weth["deposit"](value=1)
         self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
+        
+    def test_native_transfer(self):
+        self.revm.set_balance(self.caller, 100)
+        rando = self._make_rando()
+
+        self.revm.transfer(self.caller, rando, 100)
+        
+        assert self.revm.get_balance(self.caller) == 0
+        assert self.revm.get_balance(rando) == 100
 
 
 if __name__ == "__main__":
