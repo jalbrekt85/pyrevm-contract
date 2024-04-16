@@ -14,7 +14,7 @@ revm = Revm("https://eth.llamarpc.com", block_number="latest") # revm singleton;
 
 caller = "0x00000000000000000000000000000000000021E8"
 weth_addr = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-weth = Contract(weth_addr, abi_file_path="weth.json") # assuming a weth abi json file at `weth.json`
+weth = Contract(weth_addr, abi_file_path="weth.json") # assuming a `weth.json` abi
 
 revm.set_balance(caller, 100) # revm cheatcode; sets ether balance of acct
 
