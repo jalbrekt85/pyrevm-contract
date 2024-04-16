@@ -65,6 +65,7 @@ class ABIFunction:
                 f" {self.name or self.selector}: {str(e)}"
             )
 
+
 @dataclass
 class ContractABI:
     functions: List[ABIFunction]

@@ -1,11 +1,9 @@
-from pyrevm import *
-
-
 from pyrevm import EVM
+
 
 class Revm:
     _instance = None
-    
+
     @staticmethod
     def _initialize(instance, fork_url, block_number):
         instance.fork_url = fork_url
@@ -36,6 +34,6 @@ class Revm:
 
     def set_balance(self, address, value):
         return self.revm.set_balance(address, value)
-    
+
     def transfer(self, sender, receiver, value):
         return self.revm.message_call(caller=sender, to=receiver, value=value)

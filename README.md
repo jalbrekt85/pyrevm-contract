@@ -29,12 +29,7 @@ weth.balanceOf(caller) # -> 100
 
 ### Other ways to init contracts
 
-
-#### automatic ABI resolution with heimdall
-coming soon
-
-
-#### via json file object
+#### **via json file object:**
 
 ```py
 weth_abi_path = ...
@@ -44,10 +39,11 @@ with open(weth_abi_path) as f:
 weth = Contract(weth_addr, abi)
 ```
 
-#### define ABI manually
+#### **define ABI manually:**
 
 ```py
 from pyrevm_contract import ABIFunction, ContractABI
+
 funcs = [
     ABIFunction(
         name="balanceOf",
@@ -70,3 +66,6 @@ weth = Contract(
     contract_abi=ContractABI(funcs),
 )
 ```
+
+#### **automatic ABI resolution with heimdall:**
+coming soon

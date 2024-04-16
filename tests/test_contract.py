@@ -20,16 +20,18 @@ class TestContract(unittest.TestCase):
 
         self.revm = Revm("http://0.0.0.0:8545", 18000000)
         self.vault = Contract(self.vault_addr, vault_abi)
-        
+
     def _make_rando(self):
-        return '0x' + format(random.getrandbits(160), '040x')
+        return "0x" + format(random.getrandbits(160), "040x")
 
     def test_init(self):
         self.assertEqual(
             self.vault.address, "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
         )
         self.assertEqual(len(self.vault.abi.functions), 26)
-        batch_swap = [f for f in self.vault.abi.functions if f.name == "queryBatchSwap"][0]
+        batch_swap = [
+            f for f in self.vault.abi.functions if f.name == "queryBatchSwap"
+        ][0]
         self.assertEqual(
             batch_swap.inputs,
             [
@@ -68,7 +70,7 @@ class TestContract(unittest.TestCase):
 
         self.assertIsInstance(weth_amt, int)
         self.assertIsInstance(bal_amt, int)
-        
+
     def test_manual_abi(self):
         funcs = [
             ABIFunction(
@@ -78,25 +80,17 @@ class TestContract(unittest.TestCase):
                 True,
                 False,
             ),
-            ABIFunction(
-                "deposit",
-                [],
-                [],
-                False,
-                True
-            )
+            ABIFunction("deposit", [], [], False, True),
         ]
-        
+
         weth = Contract(
-            self.weth_addr,
-            contract_abi=ContractABI(funcs),
-            caller=self.caller
+            self.weth_addr, contract_abi=ContractABI(funcs), caller=self.caller
         )
 
         weth_before = weth.balanceOf(self.caller)
         weth.deposit(value=1)
         self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
-    
+
     def test_call_by_identifier(self):
         funcs = [
             ABIFunction(
@@ -106,31 +100,23 @@ class TestContract(unittest.TestCase):
                 True,
                 False,
             ),
-            ABIFunction(
-                "deposit",
-                [],
-                [],
-                False,
-                True
-            )
+            ABIFunction("deposit", [], [], False, True),
         ]
-        
+
         weth = Contract(
-            self.weth_addr,
-            contract_abi=ContractABI(funcs),
-            caller=self.caller
+            self.weth_addr, contract_abi=ContractABI(funcs), caller=self.caller
         )
 
         weth_before = weth["0x70a08231"](self.caller)
         weth["deposit"](value=1)
         self.assertEqual(weth.balanceOf(self.caller), weth_before + 1)
-        
+
     def test_native_transfer(self):
         self.revm.set_balance(self.caller, 100)
         rando = self._make_rando()
 
         self.revm.transfer(self.caller, rando, 100)
-        
+
         assert self.revm.get_balance(self.caller) == 0
         assert self.revm.get_balance(rando) == 100
 

@@ -23,6 +23,6 @@ setup(
         "pyrevm==0.3.0",
         "eth-abi",
         "eth-utils",
-        "eth-hash[pycryptodome]"
+        "eth-hash[pycryptodome]",
     ],
 )

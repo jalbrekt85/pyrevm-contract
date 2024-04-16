@@ -13,7 +13,7 @@ class Contract:
         address: str,
         abi: dict = None,
         abi_file_path: str = None,
-        contract_abi: 'ContractABI' = None,
+        contract_abi: "ContractABI" = None,
         caller: str = ZERO_ADDRESS,
         fork_url="",
         block_number=0,
@@ -38,7 +38,9 @@ class Contract:
         for func in self.abi.functions:
             if identifier in [func.name, func.get_selector().hex()]:
                 return lambda *args, **kwargs: self.call_function(func, args, kwargs)
-        raise AttributeError(f"No function with identifier {identifier} in contract ABI")
+        raise AttributeError(
+            f"No function with identifier {identifier} in contract ABI"
+        )
 
     def _load_abi(self, abi: dict = None, file_path: dict = None) -> ContractABI:
         if not abi and not file_path:
